@@ -1,3 +1,4 @@
 1. Download the CIGASE_dynamic_coloscale.html file
 2. Go to your Downloads and open the CIGASE_dynamic_coloscale.html file on you Web Browser
-3. 
+3. Choose the bandgap E_g, formation enthalpy \Delta H_f and free energy of mixing \Delta G_mix at the top of the figure.
+4. Adjust the parameters to your liking with the wheels on the left.
