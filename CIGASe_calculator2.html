@@ -534,10 +534,10 @@ function onSlide(changed){
   document.getElementById('vRatio').textContent=ratio.toFixed(3);
   document.getElementById('vT').textContent=T+' K';
   document.getElementById('vTc').textContent=(T-273).toFixed(0);
-  document.getElementById('vbIG').textContent=bIG.toFixed(2)+' eV';
-  document.getElementById('vbIA').textContent=bIA.toFixed(2)+' eV';
-  document.getElementById('vbGA').textContent=bGA.toFixed(2)+' eV';
-  document.getElementById('vbB').textContent=bB.toFixed(2)+' eV';
+  document.getElementById('vbIG').textContent=bIG.toFixed(2)+' ';
+  document.getElementById('vbIA').textContent=bIA.toFixed(2)+' ';
+  document.getElementById('vbGA').textContent=bGA.toFixed(2)+' ';
+  document.getElementById('vbB').textContent=bB.toFixed(2)+' ';
   document.getElementById('warnIII').style.display=Math.abs(sum-1)>0.01?'':'none';
 
   state={Ga,Al,In_:In,Cu,Ag,ratio,T,bIG,bIA,bGA,bB};
