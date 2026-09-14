@@ -57,7 +57,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
 <div>
   <!-- Target Eg -->
   <div class="panel">
-    <div class="pt">🎯 Target E<sub>g</sub></div>
+    <div class="pt"> Target E<sub>g</sub></div>
     <div class="eg-row">
       <label>E<sub>g</sub> target (eV)</label>
       <input type="number" id="egTarget" value="1.70" min="1.0" max="2.9" step="0.01">
@@ -79,7 +79,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
     <!-- Ga slider -->
     <div class="sr">
       <span class="frac">
-        <span id="lGa">Ga</span>&nbsp;/&nbsp;[In+Ga+Al]
+        <span id="lGa">[Ga]</span>&nbsp;/&nbsp;[In+Ga+Al]
       </span>
       <input type="range" id="sGa" min="0" max="990" value="330" oninput="onSlide('Ga')" style="accent-color:#EF9F27">
       <span class="val" id="vGa">0.330</span>
@@ -87,7 +87,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
     <!-- Al slider -->
     <div class="sr">
       <span class="frac">
-        <span id="lAl">Al</span>&nbsp;/&nbsp;[In+Ga+Al]
+        <span id="lAl">[Al]</span>&nbsp;/&nbsp;[In+Ga+Al]
       </span>
       <input type="range" id="sAl" min="0" max="990" value="100" oninput="onSlide('Al')" style="accent-color:#7F77DD">
       <span class="val" id="vAl">0.100</span>
@@ -95,7 +95,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
     <!-- In slider -->
     <div class="sr">
       <span class="frac">
-        <span id="lIn">In</span>&nbsp;/&nbsp;[In+Ga+Al]
+        <span id="lIn">[In]</span>&nbsp;/&nbsp;[In+Ga+Al]
       </span>
       <input type="range" id="sIn" min="0" max="990" value="570" oninput="onSlide('In')" style="accent-color:#378ADD">
       <span class="val" id="vIn">0.570</span>
@@ -107,12 +107,12 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
   <div class="panel">
     <div class="pt">Group I</div>
     <div class="sr">
-      <span class="frac">Ag&nbsp;/&nbsp;[Cu+Ag]</span>
+      <span class="frac">[Ag]&nbsp;/&nbsp;[Cu+Ag]</span>
       <input type="range" id="sAg" min="0" max="1000" value="100" oninput="onSlide()" style="accent-color:#7F77DD">
       <span class="val" id="vAg">0.100</span>
     </div>
     <div style="font-size:9px;font-family:monospace;color:var(--color-text-secondary,#6b6a64)">
-      Cu&nbsp;/&nbsp;[Cu+Ag] = <span id="vCu">0.900</span>
+      [Cu]&nbsp;/&nbsp;[Cu+Ag] = <span id="vCu">0.900</span>
     </div>
   </div>
 
@@ -120,7 +120,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
   <div class="panel">
     <div class="pt">Process</div>
     <div class="sr">
-      <span class="frac">I&nbsp;/&nbsp;III</span>
+      <span class="frac">[I]&nbsp;/&nbsp;[III]</span>
       <input type="range" id="sRatio" min="600" max="1500" value="1000" step="1" oninput="onSlide()" style="accent-color:#D85A30">
       <span class="val" id="vRatio">1.000</span>
     </div>
@@ -174,7 +174,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
   <div style="margin-top:4px;font-size:9px;color:var(--color-text-secondary,#6b6a64)">
     x: Ga → &nbsp;·&nbsp; y: Al ↑ &nbsp;·&nbsp;
     🔴 slider &nbsp;·&nbsp; <span id="contourLbl">— — white contour</span>
-    &nbsp;·&nbsp; 🎨 auto-scale: violet = min · red = max
+    &nbsp;·&nbsp;  auto-scale: violet = min · red = max
   </div>
 
   <!-- Results: 3 cards -->
