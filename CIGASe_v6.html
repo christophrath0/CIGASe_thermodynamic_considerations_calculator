@@ -509,7 +509,7 @@ function applyEgTarget(){
 function setTab(n){
   currentTab=n;
   [0,1,2].forEach(i=>document.getElementById('tab'+i).classList.toggle('active',i===n));
-  const lbl=[`E\u1D4D = ${egContour.toFixed(2)} eV`,'(no contour)','\u0394G\u2098\u1D35\u02E3 > 0 (hatched)'];
+  const lbl=[`E\u1D4D = ${egContour.toFixed(2)} eV`];
   document.getElementById('contourLbl').textContent='—— '+lbl[n];
   renderMap();updateResults(state.Ga,state.Al,false);
 }
