@@ -52,7 +52,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
 <div class="left-col">
 
   <div class="panel">
-    <div class="pt">🎯 Target E<sub>g</sub></div>
+    <div class="pt"> Target E<sub>g</sub></div>
     <div class="eg-row">
       <label>E<sub>g</sub> target (eV)</label>
       <input type="number" id="egTarget" value="1.70" min="1.0" max="2.9" step="0.01">
@@ -158,7 +158,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
   <div style="margin-top:4px;font-size:9px;color:var(--color-text-secondary,#6b6a64)">
     x: Ga → &nbsp;·&nbsp; y: Al ↑ &nbsp;·&nbsp; 🔴 slider &nbsp;·&nbsp;
     <span id="contourLbl">— — white contour</span>
-    &nbsp;·&nbsp; 🎨 violet=min · red=max
+    &nbsp;·&nbsp;  violet=min · red=max
   </div>
   <div class="res-row">
     <div class="rb">
@@ -272,7 +272,7 @@ function renderMap(){
   if(currentTab===0) drawContour(egContour,CW,CH);
 
   // ΔG_mix: hatching ONLY for ΔG>0 region — NO contour line
-  if(currentTab===2) drawHatchAbove(0,CW,CH);
+  ;
 
   // Fixed-axis guide line
   if(fixedAxis!=='none') drawFixedLine(CW,CH);
