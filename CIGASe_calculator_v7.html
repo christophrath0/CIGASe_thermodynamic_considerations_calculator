@@ -78,7 +78,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
 <div class="left-col">
 
   <div class="panel">
-    <div class="pt">🎯 Target E<sub>g</sub></div>
+    <div class="pt"> Target E<sub>g</sub></div>
     <div class="eg-row">
       <label>E<sub>g</sub> target (eV)</label>
       <input type="number" id="egTarget" value="1.70" min="1.0" max="2.9" step="0.01">
@@ -207,7 +207,7 @@ body{background:var(--color-background-primary,#fff);color:var(--color-text-prim
   <div style="margin-top:4px;font-size:9px;color:var(--color-text-secondary,#6b6a64)">
     x: Ga → &nbsp;·&nbsp; y: Al ↑ &nbsp;·&nbsp; 🔴 slider &nbsp;·&nbsp;
     <span id="contourLbl">—— E𝑔 = 1.70 eV</span>
-    &nbsp;·&nbsp; 🎨 violet=min · red=max
+    &nbsp;·&nbsp;  violet=min · red=max
   </div>
   <div class="res-row">
     <div class="rb">
@@ -362,36 +362,7 @@ function drawContour(target,CW,CH){
   ctx.stroke();ctx.setLineDash([]);
 }
 
-function drawHatchAbove(target,CW,CH){
-  let pts=[];
-  for(let px=0;px<CW;px++){
-    const ga=px/CW;
-    let lo=0,hi=1-ga,found=false;
-    for(let it=0;it<80;it++){
-      const mid=(lo+hi)/2,v=pixVal(ga,mid);
-      if(isNaN(v)) break;
-      if(v<target) lo=mid; else hi=mid;
-      if(hi-lo<5e-5){found=true;break;}
-    }
-    if(found) pts.push({x:px,y:(1-(lo+hi)/2)*CH});
-  }
-  if(pts.length<2) return;
-  ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x,pts[0].y);
-  pts.forEach(p=>ctx.lineTo(p.x,p.y));
-  ctx.lineTo(pts[pts.length-1].x,0);
-  ctx.lineTo(pts[0].x,0);
-  ctx.closePath();
-  ctx.clip();
-  ctx.strokeStyle='rgba(255,255,255,0.20)';
-  ctx.lineWidth=1/DPR;ctx.setLineDash([]);
-  const step=10/DPR;
-  for(let d=-CH;d<CW+CH;d+=step){
-    ctx.beginPath();ctx.moveTo(d,0);ctx.lineTo(d+CH,CH);ctx.stroke();
-  }
-  ctx.restore();
-}
+###
 
 function drawFixedLine(CW,CH){
   ctx.strokeStyle='rgba(255,255,255,0.5)';
