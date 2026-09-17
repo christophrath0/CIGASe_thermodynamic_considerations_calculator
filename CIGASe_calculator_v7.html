@@ -362,7 +362,36 @@ function drawContour(target,CW,CH){
   ctx.stroke();ctx.setLineDash([]);
 }
 
-###
+function drawHatchAbove(target,CW,CH){
+  let pts=[];
+  for(let px=0;px<CW;px++){
+    const ga=px/CW;
+    let lo=0,hi=1-ga,found=false;
+    for(let it=0;it<80;it++){
+      const mid=(lo+hi)/2,v=pixVal(ga,mid);
+      if(isNaN(v)) break;
+      if(v<target) lo=mid; else hi=mid;
+      if(hi-lo<5e-5){found=true;break;}
+    }
+    if(found) pts.push({x:px,y:(1-(lo+hi)/2)*CH});
+  }
+  if(pts.length<2) return;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x,pts[0].y);
+  pts.forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.lineTo(pts[pts.length-1].x,0);
+  ctx.lineTo(pts[0].x,0);
+  ctx.closePath();
+  ctx.clip();
+  ctx.strokeStyle='rgba(255,255,255,0.20)';
+  ctx.lineWidth=1/DPR;ctx.setLineDash([]);
+  const step=10/DPR;
+  for(let d=-CH;d<CW+CH;d+=step){
+    ctx.beginPath();ctx.moveTo(d,0);ctx.lineTo(d+CH,CH);ctx.stroke();
+  }
+  ctx.restore();
+}
 
 function drawFixedLine(CW,CH){
   ctx.strokeStyle='rgba(255,255,255,0.5)';
