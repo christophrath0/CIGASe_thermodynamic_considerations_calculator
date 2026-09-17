@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{background:var(--color-background-primary,#fff);color:var(--color-text-primary,#1a1a18);padding:.5rem;font-size:12px}
+.wrap{display:grid;grid-template-columns:270px 1fr;gap:8px;max-width:820px;margin:0 auto}
+@media(max-width:620px){.wrap{grid-template-columns:1fr}}
+.left-col{display:flex;flex-direction:column;gap:6px}
+.panel{background:var(--color-background-secondary,#f5f4f0);border:1px solid var(--color-border-tertiary,rgba(0,0,0,.1));border-radius:10px;padding:8px 11px}
+.pt{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-secondary,#6b6a64);margin-bottom:6px}
+.sr{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.sr .frac{font-size:10px;font-weight:500;white-space:nowrap;flex-shrink:0}
+.sr input[type=range]{flex:1;height:3px;cursor:pointer;min-width:0}
+/* Editable number input replacing the read-only span */
+.sr input[type=number]{
+  width:52px;font-size:10px;font-family:monospace;
+  text-align:right;flex-shrink:0;
+  border:1px solid var(--color-border-secondary,rgba(0,0,0,.18));
+  border-radius:4px;padding:1px 4px;
+  background:var(--color-background-primary,#fff);
+  color:var(--color-text-primary,#1a1a18);
+  -moz-appearance:textfield;
+}
+.sr input[type=number]::-webkit-inner-spin-button,
+.sr input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.sr input[type=range]:disabled{opacity:.35;cursor:default}
+/* Fix buttons — base style */
+.fix-row{display:flex;align-items:center;gap:5px;margin-bottom:7px;flex-wrap:wrap}
+.fix-row label{font-size:10px;font-weight:500;color:var(--color-text-secondary,#6b6a64)}
+.fix-btn{padding:2px 7px;border-radius:5px;border:1px solid var(--color-border-secondary,rgba(0,0,0,.18));background:transparent;font-size:10px;cursor:pointer;color:var(--color-text-secondary,#6b6a64);font-weight:500}
+/* None selected */
+.fix-btn.sel-none{background:#888;color:#fff;border-color:#888}
+/* Ga selected — orange */
+.fix-btn.sel-Ga{background:#EF9F27;color:#fff;border-color:#EF9F27;font-weight:700}
+/* Al selected — purple */
+.fix-btn.sel-Al{background:#7F77DD;color:#fff;border-color:#7F77DD;font-weight:700}
+/* In selected — blue */
+.fix-btn.sel-In{background:#378ADD;color:#fff;border-color:#378ADD;font-weight:700}
+/* Colored label tags shown next to slider when fixed */
+.fix-tag{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:2px}
+.tag-Ga{background:#FDE9C0;color:#A06000}
+.tag-Al{background:#E8E6F8;color:#4A44A0}
+.tag-In{background:#D6EAFA;color:#1A5A9E}
+/* Map */
+#map{display:block;border-radius:7px;cursor:crosshair;width:100%}
+#leg{display:block;border-radius:3px;margin-top:4px;width:100%}
+.leg-ticks{display:flex;justify-content:space-between;font-size:9px;font-family:monospace;color:var(--color-text-secondary,#6b6a64);margin-top:2px}
+.tab-row{display:flex;gap:3px;margin-bottom:6px}
+.tab{padding:4px 9px;border-radius:6px;border:1px solid var(--color-border-secondary,rgba(0,0,0,.15));background:transparent;font-size:10px;cursor:pointer;font-weight:500;color:var(--color-text-secondary,#6b6a64)}
+.tab.active{background:#2E75B6;color:#fff;border-color:#2E75B6}
+.res-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:5px}
+.rb{background:var(--color-background-primary,#fff);border:1px solid var(--color-border-tertiary,rgba(0,0,0,.09));border-radius:8px;padding:7px 9px;text-align:center}
+.rb .rl{font-size:9px;color:var(--color-text-secondary,#6b6a64);text-transform:uppercase;letter-spacing:.04em}
+.rb .rv{font-size:16px;font-weight:700;margin:2px 0}
+.rb .ru{font-size:9px;color:var(--color-text-secondary,#6b6a64)}
+.info{background:var(--color-background-primary,#fff);border:1px solid var(--color-border-tertiary,rgba(0,0,0,.08));border-radius:7px;padding:6px 9px;font-size:10px;font-family:monospace;line-height:1.8;margin-top:5px;min-height:42px}
+.pill{display:inline-block;padding:1px 6px;border-radius:9px;font-size:9px;font-weight:600}
+.pg{background:#E1F5EE;color:#0F6E56}.pr{background:#FAECE7;color:#712B13}
+.pb{background:#E6F1FB;color:#0C447C}.py{background:#FDF3D0;color:#7A5700}
+@media(prefers-color-scheme:dark){
+  .pg{background:#04342C;color:#9FE1CB}.pr{background:#4A1B0C;color:#F5C4B3}
+  .pb{background:#042C53;color:#B5D4F4}.py{background:#3D2C00;color:#FAC775}
+  .tag-Ga{background:#3D2A00;color:#F5BE60}
+  .tag-Al{background:#1E1A40;color:#B0AAEE}
+  .tag-In{background:#0A2540;color:#7FC4F0}
+}
+.eg-row{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.eg-row label{font-size:10px;font-weight:500;white-space:nowrap}
+.eg-row input[type=number]{width:58px;padding:2px 5px;border-radius:5px;border:1px solid var(--color-border-secondary,rgba(0,0,0,.2));background:var(--color-background-primary,#fff);color:var(--color-text-primary,#1a1a18);font-size:10px;font-family:monospace}
+.eg-row button{padding:2px 8px;border-radius:5px;border:1px solid #2E75B6;background:#2E75B6;color:#fff;font-size:10px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- LEFT -->
+<div class="left-col">
+
+  <div class="panel">
+    <div class="pt">🎯 Target E<sub>g</sub></div>
+    <div class="eg-row">
+      <label>E<sub>g</sub> target (eV)</label>
+      <input type="number" id="egTarget" value="1.70" min="1.0" max="2.9" step="0.01">
+      <button onclick="applyEgTarget()">Find</button>
+    </div>
+    <div style="font-size:9px;color:var(--color-text-secondary,#6b6a64)">Snaps to nearest composition · Enter or Find</div>
+  </div>
+
+  <div class="panel">
+    <div class="pt">Group III</div>
+    <div class="fix-row">
+      <label>Fix:</label>
+      <button class="fix-btn sel-none" id="fixNone" onclick="setFix('none')">None</button>
+      <button class="fix-btn" id="fixIn"  onclick="setFix('In')">In</button>
+      <button class="fix-btn" id="fixGa"  onclick="setFix('Ga')">Ga</button>
+      <button class="fix-btn" id="fixAl"  onclick="setFix('Al')">Al</button>
+    </div>
+    <!-- Ga row -->
+    <div class="sr">
+      <span class="frac" style="color:#A06000">[Ga]&nbsp;/&nbsp;[In+Ga+Al]</span>
+      <input type="range" id="sGa" min="0" max="1000" value="330"
+             oninput="syncFromSlider('Ga')" style="accent-color:#EF9F27">
+      <input type="number" id="nGa" value="0.330" min="0" max="1" step="0.001"
+             oninput="syncFromNumber('Ga')" style="border-color:#EF9F27">
+    </div>
+    <!-- Al row -->
+    <div class="sr">
+      <span class="frac" style="color:#4A44A0">[Al]&nbsp;/&nbsp;[In+Ga+Al]</span>
+      <input type="range" id="sAl" min="0" max="1000" value="100"
+             oninput="syncFromSlider('Al')" style="accent-color:#7F77DD">
+      <input type="number" id="nAl" value="0.100" min="0" max="1" step="0.001"
+             oninput="syncFromNumber('Al')" style="border-color:#7F77DD">
+    </div>
+    <!-- In row -->
+    <div class="sr">
+      <span class="frac" style="color:#1A5A9E">[In]&nbsp;/&nbsp;[In+Ga+Al]</span>
+      <input type="range" id="sIn" min="0" max="1000" value="570"
+             oninput="syncFromSlider('In')" style="accent-color:#378ADD">
+      <input type="number" id="nIn" value="0.570" min="0" max="1" step="0.001"
+             oninput="syncFromNumber('In')" style="border-color:#378ADD">
+    </div>
+    <div style="font-size:9px;color:var(--color-text-secondary,#6b6a64)">Σ = <span id="vSum">1.000</span></div>
+  </div>
+
+  <div class="panel">
+    <div class="pt">Group I</div>
+    <div class="sr">
+      <span class="frac">[Ag]&nbsp;/&nbsp;[Cu+Ag]</span>
+      <input type="range" id="sAg" min="0" max="1000" value="100"
+             oninput="syncFromSlider('Ag')" style="accent-color:#7F77DD">
+      <input type="number" id="nAg" value="0.100" min="0" max="1" step="0.001"
+             oninput="syncFromNumber('Ag')">
+    </div>
+    <div style="font-size:9px;font-family:monospace;color:var(--color-text-secondary,#6b6a64)">
+      [Cu]&nbsp;/&nbsp;[Cu+Ag] = <span id="vCu">0.900</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="pt">Group I / III Stoichiometry</div>
+    <div class="sr">
+      <span class="frac">[I]&nbsp;/&nbsp;[III]</span>
+      <input type="range" id="sRatio" min="600" max="1500" value="1000" step="1"
+             oninput="syncFromSlider('Ratio')" style="accent-color:#D85A30">
+      <input type="number" id="nRatio" value="1.000" min="0.600" max="1.500" step="0.001"
+             oninput="syncFromNumber('Ratio')">
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="pt">Process Temperature</div>
+    <div class="sr">
+      <span class="frac">T<sub>process</sub></span>
+      <input type="range" id="sT" min="600" max="1000" value="783"
+             oninput="syncFromSlider('T')" style="accent-color:#1D9E75">
+      <input type="number" id="nT" value="783" min="600" max="1000" step="1"
+             oninput="syncFromNumber('T')">
+    </div>
+    <div style="font-size:9px;font-family:monospace;color:var(--color-text-secondary,#6b6a64)">T = <span id="vTc">510</span> °C</div>
+  </div>
+
+  <div class="panel">
+    <div class="pt">Bowing Coefficients</div>
+    <div class="sr">
+      <span class="frac">b<sub>InGa</sub></span>
+      <input type="range" id="sbIG" min="0" max="100" value="13"
+             oninput="syncFromSlider('bIG')" style="accent-color:#378ADD">
+      <input type="number" id="nbIG" value="0.13" min="0" max="1" step="0.01"
+             oninput="syncFromNumber('bIG')">
+    </div>
+    <div class="sr">
+      <span class="frac">b<sub>InAl</sub></span>
+      <input type="range" id="sbIA" min="0" max="150" value="62"
+             oninput="syncFromSlider('bIA')" style="accent-color:#378ADD">
+      <input type="number" id="nbIA" value="0.62" min="0" max="1.5" step="0.01"
+             oninput="syncFromNumber('bIA')">
+    </div>
+    <div class="sr">
+      <span class="frac">b<sub>GaAl</sub></span>
+      <input type="range" id="sbGA" min="0" max="100" value="28"
+             oninput="syncFromSlider('bGA')" style="accent-color:#378ADD">
+      <input type="number" id="nbGA" value="0.28" min="0" max="1" step="0.01"
+             oninput="syncFromNumber('bGA')">
+    </div>
+    <div class="sr">
+      <span class="frac">b<sub>InGaAl</sub></span>
+      <input type="range" id="sbB" min="0" max="1600" value="0"
+             oninput="syncFromSlider('bB')" style="accent-color:#D85A30">
+      <input type="number" id="nbB" value="0.00" min="0" max="16" step="0.01"
+             oninput="syncFromNumber('bB')">
+    </div>
+  </div>
+
+</div><!-- end left-col -->
+
+<!-- RIGHT -->
+<div>
+  <div class="tab-row">
+    <button class="tab active" id="tab0" onclick="setTab(0)">E<sub>g</sub></button>
+    <button class="tab" id="tab1" onclick="setTab(1)">ΔH<sub>f</sub></button>
+    <button class="tab" id="tab2" onclick="setTab(2)">ΔG<sub>mix</sub></button>
+  </div>
+  <canvas id="map"></canvas>
+  <canvas id="leg"></canvas>
+  <div class="leg-ticks" id="legTicks"></div>
+  <div style="margin-top:4px;font-size:9px;color:var(--color-text-secondary,#6b6a64)">
+    x: Ga → &nbsp;·&nbsp; y: Al ↑ &nbsp;·&nbsp; 🔴 slider &nbsp;·&nbsp;
+    <span id="contourLbl">—— E𝑔 = 1.70 eV</span>
+    &nbsp;·&nbsp; 🎨 violet=min · red=max
+  </div>
+  <div class="res-row">
+    <div class="rb">
+      <div class="rl">E<sub>g</sub></div>
+      <div class="rv" id="rEg">—</div>
+      <div class="ru">eV &nbsp;<span id="pEg"></span></div>
+    </div>
+    <div class="rb">
+      <div class="rl">ΔH<sub>f</sub></div>
+      <div class="rv" id="rDH">—</div>
+      <div class="ru">kJ/mol &nbsp;<span id="pDH"></span></div>
+    </div>
+    <div class="rb">
+      <div class="rl">ΔG<sub>mix</sub></div>
+      <div class="rv" id="rDG">—</div>
+      <div class="ru">J/mol &nbsp;<span id="pDG"></span></div>
+    </div>
+  </div>
+  <div class="info" id="info">Hover over the map to read values at any composition.</div>
+</div>
+</div>
+
+<script>
+// ── PHYSICS ───────────────────────────────────────────────────────────────
+function getr(r){return r/(1+r);}
+function get1r(r){return 1/(1+r);}
+function xlnx(v){return v>1e-10?v*Math.log(v):0;}
+
+function calcEg(Ga,Al,bIG,bIA,bGA,bB){
+  const In=Math.max(0,1-Ga-Al),G=Math.max(0,Ga),A=Math.max(0,Al);
+  return In*1.00+G*1.68+A*2.70-bIG*In*G-bIA*In*A-bGA*G*A+bB*In*G*A;
+}
+function calcDH(Ga,Al,Cu,Ag,ratio){
+  const In=Math.max(0,1-Ga-Al),G=Math.max(0,Ga),A=Math.max(0,Al);
+  const r=getr(ratio),r1=get1r(ratio);
+  return In*Cu*((-263.5)-r*(-59.4)-r1*(-311.7))
+        +G *Cu*((-329.5)-r*(-59.4)-r1*(-442.7))
+        +A *Cu*((-389.9)-r*(-59.4)-r1*(-566.9))
+        +In*Ag*((-268.0)-r*(-37.7)-r1*(-311.7))
+        +G *Ag*((-318.2)-r*(-37.7)-r1*(-442.7))
+        +A *Ag*((-361.3)-r*(-37.7)-r1*(-566.9));
+}
+function calcDG(Ga,Al,T){
+  const In=Math.max(0,1-Ga-Al),G=Math.max(0,Ga),A=Math.max(0,Al);
+  return 4*Math.abs(3*In*G+7*In*A+G*A)*1000
+        -T*(-8.314*(xlnx(In)+xlnx(G)+xlnx(A)));
+}
+
+// ── RAINBOW ───────────────────────────────────────────────────────────────
+const RB=[[0,[148,0,211]],[.14,[75,0,130]],[.28,[0,0,255]],
+          [.42,[0,255,255]],[.57,[0,255,0]],[.71,[255,255,0]],
+          [.85,[255,127,0]],[1,[255,0,0]]];
+function rainbow(t){
+  const v=Math.max(0,Math.min(1,t));
+  for(let i=0;i<RB.length-1;i++){
+    const[t0,c0]=RB[i],[t1,c1]=RB[i+1];
+    if(v<=t1){const f=(v-t0)/(t1-t0);return c0.map((a,j)=>Math.round(a+f*(c1[j]-a)));}
+  }
+  return RB[RB.length-1][1];
+}
+
+// ── CANVAS ────────────────────────────────────────────────────────────────
+const cv=document.getElementById('map');
+const legCv=document.getElementById('leg');
+const ctx=cv.getContext('2d');
+const legCtx=legCv.getContext('2d');
+let DPR=1;
+
+function setupCanvases(){
+  DPR=window.devicePixelRatio||1;
+  const cssW=cv.parentElement.clientWidth||400;
+  cv.width=Math.round(cssW*DPR); cv.height=Math.round(cssW*DPR);
+  cv.style.width=cssW+'px'; cv.style.height=cssW+'px';
+  legCv.width=Math.round(cssW*DPR); legCv.height=Math.round(14*DPR);
+  legCv.style.width=cssW+'px'; legCv.style.height='14px';
+}
+
+let currentTab=0,egContour=1.70,fixedAxis='none';
+let hov={Ga:null,Al:null},state={},dynMin=0,dynMax=1;
+
+function pixVal(ga,al){
+  const{Cu,Ag,ratio,T,bIG,bIA,bGA,bB}=state;
+  if(1-ga-al<-1e-9) return NaN;
+  if(currentTab===0) return calcEg(ga,al,bIG,bIA,bGA,bB);
+  if(currentTab===1) return calcDH(ga,al,Cu,Ag,ratio);
+  return calcDG(ga,al,T);
+}
+
+function renderMap(){
+  const W=cv.width,H=cv.height;
+  const vals=new Float32Array(W*H);
+  let vMin=Infinity,vMax=-Infinity;
+  for(let py=0;py<H;py++){for(let px=0;px<W;px++){
+    const v=pixVal(px/(W-1),(H-1-py)/(H-1));
+    vals[py*W+px]=v;
+    if(!isNaN(v)&&isFinite(v)){if(v<vMin)vMin=v;if(v>vMax)vMax=v;}
+  }}
+  if(!isFinite(vMin)){vMin=0;vMax=1;}
+  dynMin=vMin;dynMax=vMax;
+  const range=vMax-vMin||1;
+
+  const img=ctx.createImageData(W,H);
+  for(let py=0;py<H;py++){for(let px=0;px<W;px++){
+    const v=vals[py*W+px],i=(py*W+px)*4;
+    if(isNaN(v)){img.data[i]=15;img.data[i+1]=15;img.data[i+2]=30;img.data[i+3]=255;}
+    else{const[r,g,b]=rainbow((v-vMin)/range);img.data[i]=r;img.data[i+1]=g;img.data[i+2]=b;img.data[i+3]=255;}
+  }}
+  ctx.putImageData(img,0,0);
+
+  ctx.save();ctx.scale(DPR,DPR);
+  const CW=cv.width/DPR,CH=cv.height/DPR;
+
+  if(currentTab===0) drawContour(egContour,CW,CH);
+  if(currentTab===2) drawHatchAbove(0,CW,CH);
+  if(fixedAxis!=='none') drawFixedLine(CW,CH);
+
+  ctx.beginPath();ctx.arc(state.Ga*CW,(1-state.Al)*CH,7,0,2*Math.PI);
+  ctx.fillStyle='#ff3333';ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();
+
+  if(hov.Ga!==null){
+    ctx.beginPath();ctx.arc(hov.Ga*CW,(1-hov.Al)*CH,5,0,2*Math.PI);
+    ctx.fillStyle='rgba(255,255,200,0.85)';ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.4)';ctx.lineWidth=1;ctx.stroke();
+  }
+
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='11px system-ui';
+  ctx.textAlign='right';ctx.fillText('Ga →',CW-4,CH-4);
+  ctx.save();ctx.translate(12,CH-13);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='left';ctx.fillText('Al →',0,0);ctx.restore();
+  ctx.restore();
+  renderLeg(vMin,vMax,range);
+}
+
+function drawContour(target,CW,CH){
+  ctx.strokeStyle='rgba(255,255,255,0.88)';
+  ctx.lineWidth=1.5/DPR;ctx.setLineDash([5/DPR,4/DPR]);
+  ctx.beginPath();let first=true;
+  for(let px=0;px<CW;px++){
+    const ga=px/CW;
+    let lo=0,hi=1-ga,found=false;
+    for(let it=0;it<90;it++){
+      const mid=(lo+hi)/2,v=pixVal(ga,mid);
+      if(isNaN(v)) break;
+      if(v<target) lo=mid; else hi=mid;
+      if(hi-lo<4e-5){found=true;break;}
+    }
+    if(found){
+      const py=(1-(lo+hi)/2)*CH;
+      if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+    }
+  }
+  ctx.stroke();ctx.setLineDash([]);
+}
+
+function drawHatchAbove(target,CW,CH){
+  let pts=[];
+  for(let px=0;px<CW;px++){
+    const ga=px/CW;
+    let lo=0,hi=1-ga,found=false;
+    for(let it=0;it<80;it++){
+      const mid=(lo+hi)/2,v=pixVal(ga,mid);
+      if(isNaN(v)) break;
+      if(v<target) lo=mid; else hi=mid;
+      if(hi-lo<5e-5){found=true;break;}
+    }
+    if(found) pts.push({x:px,y:(1-(lo+hi)/2)*CH});
+  }
+  if(pts.length<2) return;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x,pts[0].y);
+  pts.forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.lineTo(pts[pts.length-1].x,0);
+  ctx.lineTo(pts[0].x,0);
+  ctx.closePath();
+  ctx.clip();
+  ctx.strokeStyle='rgba(255,255,255,0.20)';
+  ctx.lineWidth=1/DPR;ctx.setLineDash([]);
+  const step=10/DPR;
+  for(let d=-CH;d<CW+CH;d+=step){
+    ctx.beginPath();ctx.moveTo(d,0);ctx.lineTo(d+CH,CH);ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawFixedLine(CW,CH){
+  ctx.strokeStyle='rgba(255,255,255,0.5)';
+  ctx.lineWidth=1/DPR;ctx.setLineDash([2/DPR,3/DPR]);
+  ctx.beginPath();
+  if(fixedAxis==='Ga'){
+    ctx.moveTo(state.Ga*CW,0);ctx.lineTo(state.Ga*CW,CH);
+  } else if(fixedAxis==='Al'){
+    ctx.moveTo(0,(1-state.Al)*CH);ctx.lineTo(CW,(1-state.Al)*CH);
+  } else if(fixedAxis==='In'){
+    const v=state.In_;
+    ctx.moveTo(0,v*CH);
+    ctx.lineTo((1-v)*CW,CH);
+  }
+  ctx.stroke();ctx.setLineDash([]);
+}
+
+function renderLeg(vMin,vMax,range){
+  const LW=legCv.width,LH=legCv.height;
+  legCtx.clearRect(0,0,LW,LH);
+  for(let i=0;i<LW;i++){
+    const[r,g,b]=rainbow(i/LW);
+    legCtx.fillStyle=`rgb(${r},${g},${b})`;legCtx.fillRect(i,0,1,LH);
+  }
+  const cur=pixVal(state.Ga,state.Al);
+  if(!isNaN(cur)&&isFinite(cur)&&range>0){
+    const tx=Math.round((cur-vMin)/range*LW);
+    if(tx>=0&&tx<LW){
+      legCtx.strokeStyle='#000';legCtx.lineWidth=2*DPR;
+      legCtx.beginPath();legCtx.moveTo(tx,0);legCtx.lineTo(tx,LH);legCtx.stroke();
+      legCtx.strokeStyle='#fff';legCtx.lineWidth=DPR;
+      legCtx.beginPath();legCtx.moveTo(tx,0);legCtx.lineTo(tx,LH);legCtx.stroke();
+    }
+  }
+  const dp=currentTab===2?0:3,n=4;
+  document.getElementById('legTicks').innerHTML=
+    Array.from({length:n+1},(_,i)=>`<span>${(vMin+(vMax-vMin)*(i/n)).toFixed(dp)}</span>`).join('');
+}
+
+function updateResults(Ga,Al,hover){
+  const{Cu,Ag,ratio,T,bIG,bIA,bGA,bB}=state;
+  const In=Math.max(0,1-Ga-Al);
+  if(Ga+Al>1+1e-3){document.getElementById('info').innerHTML='<span style="color:#BA7517">⚠ Ga+Al &gt; 1</span>';return;}
+  const Eg=calcEg(Ga,Al,bIG,bIA,bGA,bB);
+  const DH=calcDH(Ga,Al,Cu,Ag,ratio);
+  const DG=calcDG(Ga,Al,T);
+  const egP=Eg>=egContour?`<span class="pill py">≥${egContour.toFixed(2)} eV</span>`:`<span class="pill pb">&lt;${egContour.toFixed(2)} eV</span>`;
+  const dhP=DH<-70?'<span class="pill pg">exotherm.</span>':DH<-50?'<span class="pill pb">moderate</span>':'<span class="pill pr">weak</span>';
+  const dgP=DG<0?'<span class="pill pg">&lt;0 stable</span>':'<span class="pill pr">&gt;0 unstable</span>';
+  document.getElementById('rEg').textContent=Eg.toFixed(3);
+  document.getElementById('rDH').textContent=DH.toFixed(2);
+  document.getElementById('rDG').textContent=DG.toFixed(0);
+  document.getElementById('pEg').innerHTML=egP;
+  document.getElementById('pDH').innerHTML=dhP;
+  document.getElementById('pDG').innerHTML=dgP;
+  document.getElementById('info').innerHTML=hover
+    ?`Ga=${Ga.toFixed(3)} Al=${Al.toFixed(3)} In=${In.toFixed(3)}  Ag=${Ag.toFixed(3)} Cu=${Cu.toFixed(3)}`
+    :`Slider: Ga=${Ga.toFixed(3)} Al=${Al.toFixed(3)} In=${In.toFixed(3)}`;
+}
+
+// ── FIX AXIS ──────────────────────────────────────────────────────────────
+function setFix(axis){
+  fixedAxis=axis;
+  // Clear all style classes
+  ['None','In','Ga','Al'].forEach(k=>{
+    const btn=document.getElementById('fix'+k);
+    btn.className='fix-btn';
+  });
+  // Apply correct colour class
+  if(axis==='none') document.getElementById('fixNone').classList.add('sel-none');
+  else document.getElementById('fix'+axis).classList.add('sel-'+axis);
+
+  document.getElementById('sGa').disabled=axis==='Ga';
+  document.getElementById('sAl').disabled=axis==='Al';
+  document.getElementById('sIn').disabled=axis==='In';
+  document.getElementById('nGa').disabled=axis==='Ga';
+  document.getElementById('nAl').disabled=axis==='Al';
+  document.getElementById('nIn').disabled=axis==='In';
+  renderMap();updateResults(state.Ga,state.Al,false);
+}
+
+// ── SYNC HELPERS ──────────────────────────────────────────────────────────
+// Map key → {slider id, number id, scale factor (slider = value * scale), decimals}
+const FIELDS={
+  Ga:   {s:'sGa',  n:'nGa',  scale:1000, dec:3, min:0,    max:1    },
+  Al:   {s:'sAl',  n:'nAl',  scale:1000, dec:3, min:0,    max:1    },
+  In:   {s:'sIn',  n:'nIn',  scale:1000, dec:3, min:0,    max:1    },
+  Ag:   {s:'sAg',  n:'nAg',  scale:1000, dec:3, min:0,    max:1    },
+  Ratio:{s:'sRatio',n:'nRatio',scale:1000,dec:3, min:0.6,  max:1.5  },
+  T:    {s:'sT',   n:'nT',   scale:1,    dec:0, min:600,  max:1000 },
+  bIG:  {s:'sbIG', n:'nbIG', scale:100,  dec:2, min:0,    max:1    },
+  bIA:  {s:'sbIA', n:'nbIA', scale:100,  dec:2, min:0,    max:1.5  },
+  bGA:  {s:'sbGA', n:'nbGA', scale:100,  dec:2, min:0,    max:1    },
+  bB:   {s:'sbB',  n:'nbB',  scale:100,  dec:2, min:0,    max:16   },
+};
+
+function syncFromSlider(key){
+  const f=FIELDS[key];
+  const raw=+document.getElementById(f.s).value;
+  const val=raw/f.scale;
+  document.getElementById(f.n).value=val.toFixed(f.dec);
+  onSlide(key==='Ga'||key==='Al'||key==='In'?key:undefined);
+}
+
+function syncFromNumber(key){
+  const f=FIELDS[key];
+  let val=parseFloat(document.getElementById(f.n).value);
+  if(isNaN(val)) return;
+  val=Math.max(f.min,Math.min(f.max,val));
+  document.getElementById(f.s).value=Math.round(val*f.scale);
+  onSlide(key==='Ga'||key==='Al'||key==='In'?key:undefined);
+}
+
+// ── MAIN SLIDE LOGIC ──────────────────────────────────────────────────────
+function onSlide(changed){
+  let Ga=+document.getElementById('sGa').value/1000;
+  let Al=+document.getElementById('sAl').value/1000;
+  let In=+document.getElementById('sIn').value/1000;
+
+  // Enforce Ga+Al+In = 1
+  if(fixedAxis==='Ga'){
+    const rem=Math.max(0,1-Ga),tot=Al+In;
+    if(tot>1e-9){Al=Al/tot*rem;In=In/tot*rem;}else{Al=rem/2;In=rem/2;}
+  } else if(fixedAxis==='Al'){
+    const rem=Math.max(0,1-Al),tot=Ga+In;
+    if(tot>1e-9){Ga=Ga/tot*rem;In=In/tot*rem;}else{Ga=rem/2;In=rem/2;}
+  } else if(fixedAxis==='In'){
+    const rem=Math.max(0,1-In),tot=Ga+Al;
+    if(tot>1e-9){Ga=Ga/tot*rem;Al=Al/tot*rem;}else{Ga=rem/2;Al=rem/2;}
+  } else {
+    if(changed==='Ga'){
+      const rem=Math.max(0,1-Ga),tot=Al+In;
+      if(tot>1e-9){Al=Al/tot*rem;In=In/tot*rem;}else{Al=rem/2;In=rem/2;}
+    } else if(changed==='Al'){
+      const rem=Math.max(0,1-Al),tot=Ga+In;
+      if(tot>1e-9){Ga=Ga/tot*rem;In=In/tot*rem;}else{Ga=rem/2;In=rem/2;}
+    } else if(changed==='In'){
+      const rem=Math.max(0,1-In),tot=Ga+Al;
+      if(tot>1e-9){Ga=Ga/tot*rem;Al=Al/tot*rem;}else{Ga=rem/2;Al=rem/2;}
+    } else {
+      const s=Ga+Al+In;if(s>1e-6){Ga/=s;Al/=s;In/=s;}
+    }
+  }
+
+  Ga=Math.max(0,Math.min(1,Ga));
+  Al=Math.max(0,Math.min(1,Al));
+  In=Math.max(0,Math.min(1,In));
+
+  // Sync all three III sliders + number boxes
+  document.getElementById('sGa').value=Math.round(Ga*1000);
+  document.getElementById('sAl').value=Math.round(Al*1000);
+  document.getElementById('sIn').value=Math.round(In*1000);
+  document.getElementById('nGa').value=Ga.toFixed(3);
+  document.getElementById('nAl').value=Al.toFixed(3);
+  document.getElementById('nIn').value=In.toFixed(3);
+
+  const Ag=+document.getElementById('sAg').value/1000;
+  const ratio=+document.getElementById('sRatio').value/1000;
+  const T=+document.getElementById('sT').value;
+  const bIG=+document.getElementById('sbIG').value/100;
+  const bIA=+document.getElementById('sbIA').value/100;
+  const bGA=+document.getElementById('sbGA').value/100;
+  const bB=+document.getElementById('sbB').value/100;
+  const Cu=1-Ag;
+
+  // Sync other number boxes
+  document.getElementById('nAg').value=Ag.toFixed(3);
+  document.getElementById('nRatio').value=ratio.toFixed(3);
+  document.getElementById('nT').value=T;
+  document.getElementById('nbIG').value=bIG.toFixed(2);
+  document.getElementById('nbIA').value=bIA.toFixed(2);
+  document.getElementById('nbGA').value=bGA.toFixed(2);
+  document.getElementById('nbB').value=bB.toFixed(2);
+
+  document.getElementById('vSum').textContent=(Ga+Al+In).toFixed(3);
+  document.getElementById('vCu').textContent=Cu.toFixed(3);
+  document.getElementById('vTc').textContent=(T-273).toFixed(0);
+
+  state={Ga,Al,In_:In,Cu,Ag,ratio,T,bIG,bIA,bGA,bB};
+  renderMap();updateResults(Ga,Al,false);
+}
+
+function applyEgTarget(){
+  const v=parseFloat(document.getElementById('egTarget').value);
+  if(!isNaN(v)&&v>0.5&&v<3.5){
+    egContour=v;
+    const{bIG,bIA,bGA,bB}=state;
+    let bGa=state.Ga,bAl=state.Al,bDiff=999;
+    for(let g=0;g<=95;g++){for(let a=0;a<=95-g;a++){
+      const diff=Math.abs(calcEg(g/100,a/100,bIG,bIA,bGA,bB)-v);
+      if(diff<bDiff){bDiff=diff;bGa=g/100;bAl=a/100;}
+    }}
+    document.getElementById('sGa').value=Math.round(bGa*1000);
+    document.getElementById('sAl').value=Math.round(bAl*1000);
+    document.getElementById('sIn').value=Math.round(Math.max(0,1-bGa-bAl)*1000);
+    document.getElementById('contourLbl').textContent=`—— E\u1D4D = ${v.toFixed(2)} eV`;
+    setTab(0);onSlide();
+  }
+}
+
+function setTab(n){
+  currentTab=n;
+  [0,1,2].forEach(i=>document.getElementById('tab'+i).classList.toggle('active',i===n));
+  const lbl=[`E\u1D4D = ${egContour.toFixed(2)} eV`,'(no contour)','\u0394G\u2098\u1D35\u02E3 > 0 (hatched)'];
+  document.getElementById('contourLbl').textContent='—— '+lbl[n];
+  renderMap();updateResults(state.Ga,state.Al,false);
+}
+
+function coords(e){
+  const rect=cv.getBoundingClientRect();
+  return{Ga:Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width)),
+         Al:Math.max(0,Math.min(1,1-(e.clientY-rect.top)/rect.height))};
+}
+cv.addEventListener('mousemove',e=>{const{Ga,Al}=coords(e);hov={Ga,Al};renderMap();updateResults(Ga,Al,true);});
+cv.addEventListener('mouseleave',()=>{hov={Ga:null,Al:null};renderMap();updateResults(state.Ga,state.Al,false);});
+cv.addEventListener('click',e=>{
+  const{Ga,Al}=coords(e);
+  document.getElementById('sGa').value=Math.round(Ga*1000);
+  document.getElementById('sAl').value=Math.round(Al*1000);
+  document.getElementById('sIn').value=Math.round(Math.max(0,1-Ga-Al)*1000);
+  onSlide();
+});
+document.getElementById('egTarget').addEventListener('keydown',e=>{if(e.key==='Enter')applyEgTarget();});
+window.addEventListener('resize',()=>{setupCanvases();renderMap();});
+
+setupCanvases();setFix('none');onSlide();
+</script>
+</body>
+</html>
